@@ -17,7 +17,7 @@ export default class MyEmailClientController extends EmailClientController {
         value: {
           color: '#ffffff',
           backgroundColor: '#e11010',
-          subtitle: listInfo.words + ' words'
+          subtitle: listInfo.words + ' words, ' + (listInfo.messages || 0) + ' messages'
         }
       };
     }

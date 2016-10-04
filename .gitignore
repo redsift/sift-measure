@@ -8,9 +8,6 @@ bots_creds.json
 slack_creds.json
 .*grip.json
 
-# Sift frontend
-frontend/public/dist
-
 # Sift server
 server/tests
 server/site-packages/

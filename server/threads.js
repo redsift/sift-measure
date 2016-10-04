@@ -14,6 +14,6 @@ module.exports = function (got) {
     return previous + countInfo.words;
   }, 0);
   
-  let value = { words: threadTotal };
+  let value = { words: threadTotal, messages: inData.data.length };
   return { name: 'threads', key: threadId, value: { list: value, detail: value } };
 }
