@@ -1,0 +1,91 @@
+/**
+ * Sample Sift Stylus
+ */
+
+@import url('https://static.redsift.io/reusable/ui-rs-core/latest/css/ui-rs-core.min.css');
+
+
+body, html {
+  height: 100%;
+  overflow-x: hidden;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.column > div {
+  padding: 1em 0px;
+}
+
+.side-by-side {
+  display: flex;
+  align-content: center;
+  align-items: center;
+  justify-content: center;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  align-items: center;
+  padding: 1em;
+}
+
+.stat--separator {
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  align-items: center;
+  padding: 1em;
+  border-right: 1px solid black;
+}
+
+.count {
+  font-family: 'Source Code Pro';
+  font-style: normal;
+  font-weight: 300;
+  font-size: 40px;
+}
+
+.subtitle {
+  font-family: 'Source Code Pro';
+  font-style: normal;
+  font-weight: 300;
+  font-size: 14px;
+}
+
+.info-steps {
+  display: flex;
+  flex-direction: column;
+  margin-top: 2em;
+}
+
+.info-larger {
+  margin-top: 1em;
+  font-size: 18px;
+  display: none;
+}
+
+@media screen and (max-width: 240px) {
+  .stat {
+    padding:0.4em;
+  }
+  .stat--separator {
+    padding: 0.4em;
+  }
+  .count {
+    font-size: 16px;
+  }
+  .subtitle {
+    font-size: 11px;
+  }
+  .info-steps{
+    display: none;
+  }
+}

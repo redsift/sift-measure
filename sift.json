@@ -1,0 +1,97 @@
+{
+  "name": "sift-measure",
+  "display-name": "Measure Sift",
+  "description": "",
+  "author": "",
+  "version": "1.0.0",
+  "icon": "https://static.redsift.io/assets/sifts/template/blueprint.svg",
+  "interfaces": {
+    "email": {
+      "thread" : {
+        "controller": "dist/js/controller.umd-es2015.js"
+      },
+      "client" : {
+        "controller": "dist/js/email-client-controller.umd-es2015.js"
+      }
+    },
+    "summary": {
+      "controller": "dist/js/controller.umd-es2015.js"
+    }
+  },
+  "dag": {
+    "inputs":{
+      "emails":{
+        "gmailEmails":{
+          "filter":{
+            "conditions":[{
+              "date": "between now and 1 year before now"
+            }]
+          },
+          "wants": [
+            "archive",
+            "textBody",
+            "strippedHtmlBody"
+          ],
+          "inMailbox": "Measure"
+        }
+      }
+    },
+    "nodes":[{
+      "#": "Parse",
+      "implementation": {
+        "javascript": "server/parse.js"
+      },
+      "input": {
+          "bucket": "gmailEmails"
+      },
+      "outputs": {
+          "messages": {},
+          "threadMessages": {}
+      }
+    },
+    {
+      "#": "Count",
+      "implementation": {
+        "javascript": "server/count.js"
+      },
+      "input": {
+          "bucket": "messages",
+          "select": "*"
+      },
+      "outputs": {
+          "count": {}
+      }
+    },
+    {
+      "#": "Count Threads",
+      "implementation": {
+        "javascript": "server/threads.js"
+      },
+      "input": {
+          "bucket": "threadMessages",
+          "select": "/*"
+      },
+      "outputs": {
+          "threads": {}
+      }
+    }],
+    "stores":{
+      "messages" : {
+        "key$schema":"string"
+      },
+      "threadMessages" : {
+        "key$schema":"string/string"
+      }
+    },
+    "outputs":{
+      "exports":{
+        "count" : {
+          "key$schema":"string"
+        },
+        "threads": {
+          "import": "_email.tid"
+        }
+      }
+    }
+  }
+}
