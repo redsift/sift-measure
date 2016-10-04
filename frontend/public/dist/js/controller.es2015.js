@@ -1858,12 +1858,11 @@ class MyController extends SiftController {
   getCounts() {
     return this.storage.get({
       bucket: 'count',
-      keys: ['MESSAGES', 'WORDS']
+      keys: ['MYMESSAGES', 'MYWORDS', 'OTHERMESSAGES', 'OTHERWORDS']
     }).then((values) => {
       return {
-        messages: values[0].value || 0,
-        words: values[1].value || 0,
-        wpm: ((values[1].value || 0)/(values[0].value || 1)).toFixed(2)
+        my: { messages: values[0].value || 0, words: values[1].value || 0 },
+        other: { messages: values[2].value || 0, words: values[3].value || 0 }
       };
     });
   }

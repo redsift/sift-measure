@@ -1277,9 +1277,11 @@ var MyView = (function (SiftView) {
 
   MyView.prototype.onCounts = function onCounts (data) {
     console.log('sift-measure: onCounts: ', data);
-    Object.keys(data).forEach(function (k) {
-      document.getElementById(k).textContent = data[k];
-    });
+
+    document.getElementById('my-messages').textContent = data.my.messages;
+    document.getElementById('my-words').textContent = data.my.words;
+    document.getElementById('other-messages').textContent = data.other.messages;
+    document.getElementById('other-words').textContent = data.other.words;
   };
 
   return MyView;

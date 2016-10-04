@@ -15,9 +15,8 @@ module.exports = function (got) {
     console.log('sift-measure: parse.js: parsing: ', datum.key);
     // Parse the JMAP information for each message
     const jmapInfo = JSON.parse(datum.value);
-    // Not all emails contain a textBody so we do a cascade selection
-    const body = jmapInfo.textBody || jmapInfo.strippedHtmlBody || '';
-    const value = { words: countWords(body) };
+    const body = extractMessage(jmapInfo);
+    const value = { words: countWords(body), self: jmapInfo.user === jmapInfo['from'].email  };
     // Emit into "messages" stores so count can be calculated by the "Count" node
     results.push({ name: 'messages', key: jmapInfo.id, value: value });
     // Emit information on the thread id so we can display them in the email list and detail
@@ -35,4 +34,10 @@ function countWords(body) {
   s = s.replace(/(^\s*)|(\s*$)/gi, '');
   s = s.replace(/[ ]{2,}/gi, '');
   return s.split(' ').length;
+}
+
+function extractMessage(jmap) {
+  // Not all emails contain a textBody so we do a cascade selection
+  // Extract out other thread content
+  return jmapInfo.textBody || jmapInfo.strippedHtmlBody || '';
 }
