@@ -5,5 +5,8 @@
   "author": "",
   "version": "1.0.0",
   "#": "Please use 'redsift npm' instead of system 'npm' ",
-  "dependencies": {}
+  "dependencies": {},
+  "devDependencies": {
+    "@redsift/text-utilities": "0.0.2"
+  }
 }

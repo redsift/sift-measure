@@ -3,6 +3,8 @@
  */
 'use strict';
 
+let textUtilities = require("@redsift/text-utilities");
+
 // Entry point for DAG node
 module.exports = function (got) {
   // inData contains the key/value pairs that match the given query
@@ -16,6 +18,8 @@ module.exports = function (got) {
     // Parse the JMAP information for each message
     const jmapInfo = JSON.parse(datum.value);
     const body = extractMessage(jmapInfo);
+    
+    console.log('counting:', body);
     const value = { words: countWords(body), self: jmapInfo.user === jmapInfo['from'].email  };
     // Emit into "messages" stores so count can be calculated by the "Count" node
     results.push({ name: 'messages', key: jmapInfo.id, value: value });
@@ -39,5 +43,7 @@ function countWords(body) {
 function extractMessage(jmap) {
   // Not all emails contain a textBody so we do a cascade selection
   // Extract out other thread content
-  return jmapInfo.textBody || jmapInfo.strippedHtmlBody || '';
+  let body = jmap.textBody || jmap.strippedHtmlBody || '';
+
+  return textUtilities.trimEmailThreads(body);
 }
