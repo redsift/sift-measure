@@ -30,6 +30,9 @@ export default class MyView extends SiftView {
     document.getElementById('my-words').textContent = data.my.words;
     document.getElementById('other-messages').textContent = data.other.messages;
     document.getElementById('other-words').textContent = data.other.words;
+    document.getElementById('people').textContent = data.people;
+    document.getElementById('senders').textContent = data.senders;
+    document.getElementById('domains').textContent = data.domains;    
   }
 }
 

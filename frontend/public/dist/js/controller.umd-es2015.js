@@ -1846,6 +1846,7 @@ var MyController = (function (SiftController) {
     // You have to call the super() method to initialize the base class.
     SiftController.call(this);
     this._suHandler = this.onStorageUpdate.bind(this);
+    this._tuHandler = this.onTimingStorageUpdate.bind(this);
   }
 
   if ( SiftController ) MyController.__proto__ = SiftController;
@@ -1857,6 +1858,10 @@ var MyController = (function (SiftController) {
     console.log('sift-measure: loadView', state);
     // Register for storage update events on the "count" bucket so we can update the UI
     this.storage.subscribe(['count'], this._suHandler);
+    this.storage.subscribe(['timings'], this._tuHandler);
+
+    this.getTimings();
+
     switch (state.type) {
       case 'email-thread':
         var w = 0;
@@ -1881,15 +1886,46 @@ var MyController = (function (SiftController) {
       this$1.publish('counts', counts);
     });
   };
+  
+  MyController.prototype.onTimingStorageUpdate = function onTimingStorageUpdate (value) {
+    var this$1 = this;
+
+    console.log('sift-measure: onTimingStorageUpdate: ', value);
+    return this.getTimings().then(function (counts) {
+      // Publish 'counts' event to view
+      this$1.publish('timings', counts);
+    });
+  };
+
+  MyController.prototype.getTimings = function getTimings () {
+    var this$1 = this;
+
+    return this.storage.getAllKeys({ 
+      bucket: 'timings' 
+    }).then(function (values) {
+      console.log(values);
+      if (values.length === 0) return values;
+      return this$1.storage.get({ 
+        bucket: 'timings',
+        keys: values 
+      });
+    }).then(function (values) {
+      console.log(values);
+      return values;
+    });
+  };
 
   MyController.prototype.getCounts = function getCounts () {
     return this.storage.get({
       bucket: 'count',
-      keys: ['MYMESSAGES', 'MYWORDS', 'OTHERMESSAGES', 'OTHERWORDS']
+      keys: ['MYMESSAGES', 'MYWORDS', 'OTHERMESSAGES', 'OTHERWORDS', 'PEOPLE', 'SENDERS', 'DOMAINS']
     }).then(function (values) {
       return {
         my: { messages: values[0].value || 0, words: values[1].value || 0 },
-        other: { messages: values[2].value || 0, words: values[3].value || 0 }
+        other: { messages: values[2].value || 0, words: values[3].value || 0 },
+        people: values[4].value || 0,
+        senders: values[5].value || 0,
+        domains: values[6].value || 0                
       };
     });
   };

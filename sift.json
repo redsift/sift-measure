@@ -46,11 +46,15 @@
       },
       "outputs": {
           "messages": {},
+          "people": {},
+          "domains": {},
+          "senders": {},
+          "days": {},
           "threadMessages": {}
       }
     },
     {
-      "#": "Count",
+      "#": "Count Message Metadata",
       "implementation": {
         "javascript": "server/count.js"
       },
@@ -60,6 +64,58 @@
       },
       "outputs": {
           "count": {}
+      }
+    },
+    {
+      "#": "Length of People",
+      "implementation": {
+        "javascript": "server/length.js"
+      },
+      "input": {
+          "bucket": "people",
+          "select": "*"
+      },
+      "outputs": {
+          "count": {}
+      }
+    },
+    {
+      "#": "Length of Domains",
+      "implementation": {
+        "javascript": "server/length.js"
+      },
+      "input": {
+          "bucket": "domains",
+          "select": "*"
+      },
+      "outputs": {
+          "count": {}
+      }
+    },
+    {
+      "#": "Length of Senders",
+      "implementation": {
+        "javascript": "server/length.js"
+      },
+      "input": {
+          "bucket": "senders",
+          "select": "*"
+      },
+      "outputs": {
+          "count": {}
+      }
+    },
+    {
+      "#": "Count Days",
+      "implementation": {
+        "javascript": "server/days.js"
+      },
+      "input": {
+          "bucket": "days",
+          "select": "/*"
+      },
+      "outputs": {
+          "timings": {}
       }
     },
     {
@@ -79,12 +135,27 @@
       "messages" : {
         "key$schema":"string"
       },
+      "people" : {
+        "key$schema":"string"
+      },      
+      "domains" : {
+        "key$schema":"string"
+      },
+      "senders" : {
+        "key$schema":"string"
+      },  
+      "days" : {
+        "key$schema":"string/string"
+      }, 
       "threadMessages" : {
         "key$schema":"string/string"
       }
     },
     "outputs":{
       "exports":{
+        "timings" : {
+          "key$schema":"string"
+        },
         "count" : {
           "key$schema":"string"
         },
