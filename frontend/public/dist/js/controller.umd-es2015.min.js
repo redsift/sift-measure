@@ -1841,6 +1841,10 @@ function registerSiftController(siftController) {
 /**
  * Sift Measure. Frontend controller entry point.
  */
+var MY_WRITING_WPS = 45/60; // words per second while writing thoughtfully
+var MY_READING_WPS = 250/60;  // words per second while reading
+var MY_PROOF_WPS = MY_READING_WPS/2; // words per second while proofreading
+
 var MyController = (function (SiftController) {
   function MyController() {
     // You have to call the super() method to initialize the base class.
@@ -1870,7 +1874,7 @@ var MyController = (function (SiftController) {
         }catch(e){ }
         return { html: 'email-thread.html', data: { words: w } };
       case 'summary':
-        return { html: 'summary.html', data: this.getCounts() };
+        return { html: 'summary.html', data: Promise.all([this.getCounts(), this.getTimings()]) };
       default:
         console.error('sift-measure: unknown Sift type: ', state.type);
     }
@@ -1910,8 +1914,15 @@ var MyController = (function (SiftController) {
         keys: values 
       });
     }).then(function (values) {
-      console.log(values);
-      return values;
+      var parsed = values.map(function (d) { return ({ key: new Date(d.key), value: JSON.parse(d.value) }); });
+
+      var min = null;
+      var max = null;
+      if (values.length > 0) {
+        min = parsed[0].key;
+        max = parsed[values.length - 1].key;
+      }
+      return { min: min, max: max, values: parsed };
     });
   };
 
@@ -1920,9 +1931,15 @@ var MyController = (function (SiftController) {
       bucket: 'count',
       keys: ['MYMESSAGES', 'MYWORDS', 'OTHERMESSAGES', 'OTHERWORDS', 'PEOPLE', 'SENDERS', 'DOMAINS']
     }).then(function (values) {
+      var myWords = values[1].value || 0;
+      var otherWords = values[3].value || 0;
+
+      var writeTime = myWords / MY_WRITING_WPS + myWords / MY_PROOF_WPS;
+      var readTime = otherWords / MY_READING_WPS;
+
       return {
-        my: { messages: values[0].value || 0, words: values[1].value || 0 },
-        other: { messages: values[2].value || 0, words: values[3].value || 0 },
+        my: { messages: values[0].value || 0, words: myWords, writing: writeTime, reading: readTime },
+        other: { messages: values[2].value || 0, words: otherWords },
         people: values[4].value || 0,
         senders: values[5].value || 0,
         domains: values[6].value || 0                

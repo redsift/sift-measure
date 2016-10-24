@@ -1251,6 +1251,42 @@ function registerSiftView(siftView) {
 /**
  * Sift Measure. Frontend view entry point.
  */
+var HOURS_IN_WORKING_DAY = 8;
+
+function formatDuration(ms, hoursInDay) {
+  var hours = ms/(60*60*1000);
+  if (hours < hoursInDay) {
+    return ((hours.toFixed(1)) + " hours");
+  }
+
+  var days = ms/(hoursInDay*60*60*1000);
+
+  if (days < 32) {
+    var down = Math.floor(days);
+    var str$1 = down + " day" + (down === 1 ? '' : 's');
+    
+    var remainder = days - down;
+
+    if (remainder < 0.1) {
+      return str$1;
+    }
+
+    return (str$1 + ", " + ((remainder*hoursInDay).toFixed(0)) + " hours");
+}
+
+  days = Math.ceil(days);
+
+  var weeks = Math.floor(days/7);
+  var str = weeks + " week" + (weeks === 1 ? '' : 's');
+
+  var remain = days - (weeks*7);
+  if (remain === 0) {
+    return str;
+  }
+
+  return (str + ", " + remain + " day" + (remain === 1 ? '' : 's'))
+}
+
 var MyView = (function (SiftView) {
   function MyView() {
     // You have to call the super() method to initialize the base class.
@@ -1258,6 +1294,9 @@ var MyView = (function (SiftView) {
 
     // Listens for 'count' events from the Controller
     this.controller.subscribe('counts', this.onCounts.bind(this));
+
+    // Listens for 'timings' events from the Controller
+    this.controller.subscribe('timings', this.onTimings.bind(this));
   }
 
   if ( SiftView ) MyView.__proto__ = SiftView;
@@ -1267,7 +1306,8 @@ var MyView = (function (SiftView) {
   // TODO: link to docs
   MyView.prototype.presentView = function presentView (value) {
     console.log('sift-measure: presentView: ', value);
-    this.onCounts(value.data);
+    this.onCounts(value.data[0]);
+    this.onTimings(value.data[1]);
   };;
 
   // TODO: link to docs
@@ -1278,6 +1318,9 @@ var MyView = (function (SiftView) {
   MyView.prototype.onCounts = function onCounts (data) {
     console.log('sift-measure: onCounts: ', data);
 
+    document.getElementById('reading').textContent = formatDuration(data.my.reading * 1000, HOURS_IN_WORKING_DAY);
+    document.getElementById('writing').textContent = formatDuration(data.my.writing * 1000, HOURS_IN_WORKING_DAY);
+
     document.getElementById('my-messages').textContent = data.my.messages;
     document.getElementById('my-words').textContent = data.my.words;
     document.getElementById('other-messages').textContent = data.other.messages;
@@ -1285,6 +1328,22 @@ var MyView = (function (SiftView) {
     document.getElementById('people').textContent = data.people;
     document.getElementById('senders').textContent = data.senders;
     document.getElementById('domains').textContent = data.domains;    
+  };
+
+  MyView.prototype.onTimings = function onTimings (data) {
+    console.log('sift-measure: onTimings: ', data);
+
+    document.getElementById('start').textContent = data.min.toDateString();
+    document.getElementById('end').textContent = data.max.toDateString();
+
+    document.getElementById('duration').textContent = formatDuration(data.max - data.min, 24); 
+
+    var days = data.values.map(function (d) { return ({ day: d.key.getUTCDay(), total: d.value.total }); });   
+
+    var daySummay = [ 0, 0, 0, 0, 0, 0, 0 ];
+    days.forEach(function (d) { return daySummay[d.day] += d.total; });
+
+    console.log('Got', days, daySummay);
   };
 
   return MyView;
